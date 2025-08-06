@@ -9,7 +9,9 @@ Rails.application.configure do
   config.consider_all_requests_local = false
 
   config.action_controller.perform_caching = true
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+  config.public_file_server.headers = {
+    "cache-control" => "public, max-age=#{1.year.to_i}"
+  }
 
   config.active_storage.service = :local
 
@@ -26,9 +28,9 @@ Rails.application.configure do
 
   # ✅ Solid Cache
   config.cache_store = :solid_cache_store
-  config.solid_cache.database = :primary
+  config.solid_cache.connects_to = { database: { writing: :primary } }
 
-  # ✅ Solid Queue
+  # ✅ Solid Queue (optional if you're using background jobs)
   config.active_job.queue_adapter = :solid_queue
   # config.solid_queue.connects_to = { database: { writing: :queue } }
 
