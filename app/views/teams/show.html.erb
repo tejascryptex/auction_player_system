@@ -1,0 +1,221 @@
+
+<!-- Page Wrapper -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+
+  <!-- Top Navigation Bar -->
+  <div class="bg-white/70 backdrop-blur-sm border-b border-gray-200 shadow-md mb-6 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <i class="bi bi-trophy-fill text-yellow-500 text-xl"></i>
+        <h1 class="text-lg sm:text-xl font-bold text-gray-800 tracking-tight">
+          Godhni Premier League Season - 2
+        </h1>
+        <span class="text-blue-600 text-sm font-medium">| <%= @team.team_name %></span>
+      </div>
+      <div>
+        <%= link_to "Download Players List PDF", download_players_pdf_team_path(@team), class: "bg-blue-100 text-blue-600 hover:bg-blue-200 transition px-4 py-2 text-sm font-medium rounded-lg shadow-sm" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Button Card -->
+  <div class="card mb-5">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <%= link_to '← Back to Setup', new_team_path, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Panel -->
+      <div class="lg:col-span-4 space-y-6">
+
+        <!-- Team Info -->
+        <div class="bg-white p-6 rounded-2xl shadow-xl text-center">
+          <h2 class="font-semibold text-md text-gray-700">Team & Owner Details</h2>
+          <p class="text-sm text-gray-500">Your team and owner information</p>
+          <hr class="my-4">
+          <% if @team.logo.attached? %>
+            <%= image_tag @team.logo, class: "w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow" %>
+          <% else %>
+            <div class="w-32 h-32 bg-gray-100 rounded-full mx-auto flex items-center justify-center text-gray-400 text-xs mb-4">128×128</div>
+          <% end %>
+          <h2 class="text-xl font-bold text-gray-900"><%= @team.team_name %></h2>
+          <p class="text-xs text-gray-400 uppercase tracking-wide mb-6">Team Name</p>
+          <hr class="my-4">
+          <% if @team.owner_avatar.attached? %>
+            <%= image_tag @team.owner_avatar, class: "w-24 h-24 rounded-full mx-auto mb-4 object-cover shadow" %>
+          <% else %>
+            <div class="w-24 h-24 bg-gray-100 rounded-full mx-auto flex items-center justify-center text-gray-400 text-xs mb-4">128×128</div>
+          <% end %>
+          <h3 class="text-md font-medium text-gray-800"><%= @team.owner_name %></h3>
+          <p class="text-xs text-gray-400 uppercase tracking-wide">Team Owner</p>
+        </div>
+
+        <!-- Staff Section -->
+        <div class="bg-white p-6 rounded-2xl shadow-xl">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h2 class="font-semibold text-md text-gray-700">Management & Staff</h2>
+              <p class="text-sm text-gray-500">Your team's coaches, physios & staff.</p>
+            </div>
+            <button onclick="document.getElementById('staffModal').classList.remove('hidden')" class="bg-white border border-gray-300 text-gray-700 px-4 py-1.5 rounded-lg hover:bg-gray-50">+ Add</button>
+          </div>
+
+          <% @team.staff_members.each do |staff| %>
+            <div class="flex items-center justify-between border rounded-lg p-3 mb-2">
+              <div class="flex items-center gap-3">
+                <% if staff.photo.attached? %>
+                  <%= image_tag staff.photo, class: "w-10 h-10 rounded-full object-cover shadow" %>
+                <% else %>
+                  <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-500">48×48</div>
+                <% end %>
+                <div>
+                  <p class="text-gray-800 font-medium"><%= staff.name %></p>
+                  <span class="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full"><%= staff.role %></span>
+                </div>
+              </div>
+              <%= button_to "🗑", team_staff_member_path(@team, staff), method: :delete, class: "text-red-600 hover:text-red-800 text-sm" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="lg:col-span-8 space-y-10">
+
+        
+        <div class="bg-white p-6 rounded-2xl shadow-xl">
+          <h2 class="text-lg font-semibold text-gray-800 mb-1">Manage Purse & Acquire Players</h2>
+          <p class="text-sm text-gray-500 mb-4">Acquire Best Players For Your Squad.</p>
+          <div class="bg-gray-100 text-center py-6 rounded-xl mb-6">
+            <div class="text-gray-600 text-sm font-medium uppercase">Available Purse</div>
+            <div class="text-3xl font-bold text-gray-900 mt-1">₹ <%= number_with_delimiter(@team.available_purse) %></div>
+            <% if @team.available_purse <= 0 %>
+              <p class="mt-2 text-red-500 text-sm font-semibold">Your purse has been exhausted.</p>
+            <% end %>
+          </div>
+
+          <% if @team.available_purse > 0 %>
+            <%= form_with model: [@team, Player.new], data: { turbo: false } do |f| %>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                <%= f.text_field :name, placeholder: "e.g. Virat Kohli", class: "border px-4 py-2 rounded-lg w-full text-sm focus:outline-none focus:ring focus:border-blue-300", required: true %>
+                <%= f.select :role, ["All-Rounder", "Right-Hand Batsman","Left-Hand Batsman","Right-arm Bowler","Left-arm Bowler", "Wicket-Keeper"], {}, class: "border px-4 py-2 rounded-lg w-full text-sm focus:outline-none focus:ring focus:border-blue-300" %>
+                <%= f.number_field :price, placeholder: "0", min: 0, class: "border px-4 py-2 rounded-lg w-full text-sm focus:outline-none focus:ring focus:border-blue-300", required: true %>
+              </div>
+              <%= f.submit "Add Player", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow" %>
+            <% end %>
+
+          <% end %>
+        </div>
+
+        <!-- Player Table -->
+        <div class="bg-white p-6 rounded-2xl shadow-xl">
+          <h2 class="text-lg font-semibold text-gray-800 mb-1">Your Team</h2>
+          <p class="text-sm text-gray-500 mb-4">A list of all players currently on your team.</p>
+          <% if @team.players.any? %>
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm text-left rounded-xl overflow-hidden">
+                <thead>
+                  <tr class="border-b text-gray-500 uppercase text-xs bg-gray-50">
+                    <th class="py-2 px-4">No.</th>
+                    <th class="py-2 px-4">Name</th>
+                    <th class="py-2 px-4">Role</th>
+                    <th class="py-2 px-4">Price</th>
+                    <th class="py-2 px-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gray-800">
+                  <% @team.players.each_with_index do |player, index| %>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="py-3 px-4"><%= index + 1 %></td>
+                      <td class="py-3 px-4 font-medium flex items-center gap-1">
+                        <%= player.name %>
+                        <% if player.name == @team.owner_name %>
+                          <span title="Owner" class="text-yellow-500 text-sm"><i data-lucide="crown" class="w-4 h-4 text-yellow-500"></i></span>
+                        <% end %>
+                      </td>
+                      <td class="py-3 px-4">
+                        <span class="text-xs px-2 py-1 rounded-full font-medium inline-flex items-center 
+                        <%= case player.role 
+                        when 'Right-Hand Batsman' then 'bg-red-200 text-red-800' 
+                        when 'Left-Hand Batsman' then 'bg-amber-100 text-amber-700' 
+                        when 'Right-arm Bowler' then 'bg-blue-100 text-blue-700' 
+                        when 'Left-arm Bowler' then 'bg-yellow-100 text-yellow-700' 
+                        when 'All-Rounder' then 'bg-purple-100 text-purple-700' 
+                        when 'Wicket-Keeper' then 'bg-orange-200 text-orange-700'
+                         else 'bg-gray-100 text-gray-600' end %>"><%= player.role %></span>
+                      </td>
+                      <td class="py-3 px-4"><%= number_with_delimiter(player.price) %></td>
+                      <td class="py-3 px-4">
+                        <% unless player.name == @team.owner_name || player.id.nil? %>
+                          <%= button_to player_path(player), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-500 hover:text-red-700 text-sm" do %>🗑<% end %>
+                        <% else %>
+                          <span class="text-gray-400 text-sm">—</span>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500">No players have been added yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Staff Modal -->
+<div id="staffModal" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-xl relative">
+      <h3 class="text-lg font-semibold mb-4">Add Management Staff</h3>
+      <%= form_with model: [@team, StaffMember.new], local: true, html: { multipart: true } do |f| %>
+        <div class="mb-3">
+          <%= f.label :name, "Staff Name", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :name, placeholder: "e.g. John Wright", class: "mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" %>
+        </div>
+        <div class="mb-3">
+          <%= f.label :role, "Role", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :role, ["Coach", "Physio", "Analyst", "Assistant Coach"], {}, class: "mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" %>
+        </div>
+        <div class="mb-4">
+          <%= f.label :photo, "Upload Staff Photo", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.file_field :photo, class: "block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:border-0 file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200 rounded-lg" %>
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button type="button" onclick="document.getElementById('staffModal').classList.add('hidden')" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md">Cancel</button>
+          <%= f.submit "Add to Team", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form[action*='players']");
+    if (!form) return;
+
+    const priceField = form.querySelector("input[name='player[price]']");
+    const purseElement = document.querySelector(".text-3xl.font-bold.text-gray-900");
+
+    if (!priceField || !purseElement) return;
+
+    const availablePurse = parseInt(purseElement.textContent.replace(/[₹, ]/g, ""));
+
+    form.addEventListener("submit", function (e) {
+      const enteredPrice = parseInt(priceField.value);
+
+      if (isNaN(enteredPrice)) return; // Allow blank or invalid prices to be handled by validation
+
+      if (enteredPrice > availablePurse) {
+        e.preventDefault();
+        alert("Insufficient purse! You can't add a player for more than ₹" + availablePurse.toLocaleString());
+      }
+    });
+  });
+</script>

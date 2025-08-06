@@ -1,0 +1,22 @@
+<!-- app/views/teams/players_list_pdf.html.erb -->
+
+<h1>Player List for <%= @team.team_name %></h1>
+
+<table border="1" cellspacing="0" cellpadding="5">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Role</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @team.players.each do |player| %>
+      <tr>
+        <td><%= player.name %></td>
+        <td><%= player.role %></td>
+        <td>₹<%= player.price %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
