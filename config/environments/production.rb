@@ -26,17 +26,6 @@ Rails.application.configure do
   config.silence_healthcheck_path = "/up"
   config.active_support.report_deprecations = false
 
-    # ✅ Solid Cache
-  config.cache_store = :solid_cache_store
-  config.solid_cache.databases = {
-    primary: { writing: :primary }
-  }
-
-  # ✅ Solid Queue (optional, if using background jobs)
-  config.active_job.queue_adapter = :solid_queue
-  # config.solid_queue.databases = {
-  #   queue: { writing: :queue }
-  # }
 
 
   config.action_mailer.default_url_options = { host: "example.com" }
