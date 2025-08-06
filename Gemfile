@@ -67,3 +67,5 @@ gem 'prawn'
 gem 'prawn-table'
 # gem 'wicked_pdf'
 # gem 'wkhtmltopdf-binary'
+gem "tailwindcss-rails"
+

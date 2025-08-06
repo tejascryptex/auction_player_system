@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_05_100612) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_06_073526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,36 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_05_100612) do
     t.index ["team_id"], name: "index_players_on_team_id"
   end
 
+  create_table "solid_queue_assignments", force: :cascade do |t|
+    t.bigint "solid_queue_process_id"
+    t.bigint "solid_queue_job_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["solid_queue_job_id"], name: "index_solid_queue_assignments_on_solid_queue_job_id"
+    t.index ["solid_queue_process_id"], name: "index_solid_queue_assignments_on_solid_queue_process_id"
+  end
+
+  create_table "solid_queue_jobs", force: :cascade do |t|
+    t.string "queue_name", null: false
+    t.string "job_class", null: false
+    t.text "arguments"
+    t.datetime "scheduled_at"
+    t.datetime "finished_at"
+    t.integer "priority", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["queue_name"], name: "index_solid_queue_jobs_on_queue_name"
+    t.index ["scheduled_at"], name: "index_solid_queue_jobs_on_scheduled_at"
+  end
+
+  create_table "solid_queue_processes", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "last_heartbeat_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_solid_queue_processes_on_name", unique: true
+  end
+
   create_table "staff_members", force: :cascade do |t|
     t.string "name"
     t.string "role"
@@ -83,5 +113,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_05_100612) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "draw_players", "teams"
   add_foreign_key "players", "teams"
+  add_foreign_key "solid_queue_assignments", "solid_queue_jobs"
+  add_foreign_key "solid_queue_assignments", "solid_queue_processes"
   add_foreign_key "staff_members", "teams"
 end

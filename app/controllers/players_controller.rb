@@ -21,9 +21,8 @@ class PlayersController < ApplicationController
     # Prevent deleting the owner
     if player.name != team.owner_name
       player.destroy
+      redirect_to team_path(team), alert: "Player removed successfully."
     end
-
-    redirect_to team_path(team)
   end
 
   private
