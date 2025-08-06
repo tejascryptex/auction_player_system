@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Fail on errors
+
 set -o errexit
 
 # Install dependencies
