@@ -12,13 +12,20 @@ test:
   database: auction_player_system_test
 
 production:
-  <<: *default
-  database: auction_player_system_production
-  username: auction_player_system
-  password: <%= ENV["AUCTION_PLAYER_SYSTEM_DATABASE_PASSWORD"] %>
+  primary:
+    <<: *default
+    database: auction_player_system_production
+    username: auction_player_system
+    password: <%= ENV["AUCTION_PLAYER_SYSTEM_DATABASE_PASSWORD"] %>
 
-queue:
+  queue:
     <<: *default
     database: auction_player_system_queue
+    username: auction_player_system
+    password: <%= ENV["AUCTION_PLAYER_SYSTEM_DATABASE_PASSWORD"] %>
+
+  cache:
+    <<: *default
+    database: auction_player_system_cache
     username: auction_player_system
     password: <%= ENV["AUCTION_PLAYER_SYSTEM_DATABASE_PASSWORD"] %>
