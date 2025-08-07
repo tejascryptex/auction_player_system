@@ -2,7 +2,7 @@ class StaffMembersController < ApplicationController
   def create
     @team = Team.find(params[:team_id])
     @staff = @team.staff_members.create(staff_member_params)
-    redirect_to team_path(@team), notice: "Staff member removed successfully."
+    redirect_to team_path(@team), notice: "A New Staff Member Added successfully."
   end
 
   def destroy

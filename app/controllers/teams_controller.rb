@@ -27,7 +27,7 @@ class TeamsController < ApplicationController
       @team = Team.new(team_params.permit(:team_name, :owner_name, :purse, :logo, :owner_avatar))
 
       if @team.save
-        redirect_to team_path(@team), notice: "Team created successfully!"
+        redirect_to team_path(@team), notice: "Welcome, Champions! Get ready to build the ultimate team — victory begins here! 💪🏆"
       else
         flash.now[:alert] = @team.errors.full_messages.to_sentence
         render :new, status: :unprocessable_entity
