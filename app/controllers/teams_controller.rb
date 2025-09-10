@@ -56,10 +56,6 @@ class TeamsController < ApplicationController
 
 
 
-  # app/models/team.rb
-  def purse_exhausted?
-    purse.to_i <= 0
-  end
 
   def download_players_pdf
     @team = Team.find(params[:id])

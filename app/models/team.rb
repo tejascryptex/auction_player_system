@@ -5,7 +5,6 @@ class Team < ApplicationRecord
   has_one_attached :owner_avatar
   has_many :draw_players, dependent: :destroy
 
-
   validates :team_name, uniqueness: { scope: :owner_name, message: "already exists for this owner" }
 
   before_validation :set_default_purse, on: :create
@@ -14,6 +13,10 @@ class Team < ApplicationRecord
   def available_purse
     (purse) - players.sum(:price)
   end
+
+    def purse_exhausted?
+      purse.to_i <= 0
+    end
 
   private
 
